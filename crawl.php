@@ -7,7 +7,8 @@ function getHTML($url) {
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => "Mozilla/5.0"
+        CURLOPT_USERAGENT => "Mozilla/5.0",
+        CURLOPT_TIMEOUT => 10,
     ]);
     $html = curl_exec($ch);
     curl_close($ch);
@@ -21,17 +22,21 @@ function getRandomCategory() {
 
 $sources = [
     ["https://vnexpress.net/rss/tin-moi-nhat.rss", "VnExpress", "//article//p"],
-    ["https://nongnghiep.vn/rss/tin-moi-nhat.rss", "BNN", "//div[contains(@class,'article-content')]//p"]
-    // Bỏ BCC vì không có RSS hợp lệ
+    ["https://zingnews.vn/rss/the-thao.rss", "ZingNews", "//div[contains(@class,'the-article-body')]//p"],
+    ["https://tuoitre.vn/rss/the-thao.rss", "TuoiTre", "//div[contains(@class,'detail-content')]//p"]
 ];
+
+
 
 $total = 0;
 
 foreach ($sources as [$feedUrl, $sourceName, $contentXPath]) {
     $rss = @simplexml_load_file($feedUrl);
     if (!$rss) continue;
-
+    $count = 0; 
     foreach ($rss->channel->item as $item) {
+        if ($count >= 10) break; 
+        $count++;
         $title = (string)$item->title;
         $link = (string)$item->link;
         $desc = strip_tags((string)$item->description);
@@ -69,5 +74,4 @@ foreach ($sources as [$feedUrl, $sourceName, $contentXPath]) {
         }
     }
 }
-
 echo "✅ Đã thêm $total bài viết từ RSS.";
