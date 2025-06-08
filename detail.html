@@ -70,7 +70,6 @@
     .then((article) => {
       document.getElementById("detail-loading").classList.add("d-none");
       document.getElementById("detail-content").classList.remove("d-none");
-
       document.getElementById("detail-title").textContent = article.title;
       document.getElementById("detail-image").src = article.image_url;
       document.getElementById("detail-image").alt = article.title;
